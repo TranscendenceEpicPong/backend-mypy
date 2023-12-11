@@ -11,8 +11,6 @@ import authentification.service as service
 
 @require_POST
 def login(request):
-    access_token = request.headers['Authorization'].replace("Bearer ", "", 1)
-    print(service.checkAccessToken(access_token))
     user = service.login({
         "email": request.POST.get('email'),
         "password": request.POST.get('password'),
