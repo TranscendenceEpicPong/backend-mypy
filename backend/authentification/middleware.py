@@ -7,7 +7,6 @@ class AuthenticationMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        print("MIDDLEWARE")
 
         if request.path in ['/authentification/login', '/authentification/register']:
             return response

@@ -32,7 +32,6 @@ def login(datas):
     form = UserLoginForm(datas)
     if form.is_valid():
         try:
-            print(datas)
             user = User.objects.get(email=datas.get('email'))
 
             if (check_password(datas.get('password'), user.password)):
