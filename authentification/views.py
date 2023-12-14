@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 import json
 from users.service import create as create_user, login as login_user
@@ -8,26 +8,34 @@ from django.contrib.auth.models import User
 from security.service import sha256_hash
 import binascii
 import authentification.service as service
+import datetime
 
 @require_POST
 def login(request):
-    user = service.login({
+    token = service.login({
         "email": request.POST.get('email'),
         "password": request.POST.get('password'),
     })
 
-    return JsonResponse({
-        "datas": user
-    })
+    response = HttpResponse("Login successfully!")
+    response.set_cookie('authorization',
+                        value=token,
+                        path='/',
+                        httponly=True)
+    return response
 
 @require_POST
 def register(request):
-    user = service.register({
+    token = service.register({
         "username": request.POST.get('username'),
         "email": request.POST.get('email'),
         "password": request.POST.get('password'),
         "confirm_password": request.POST.get('confirm_password'),
     })
 
-    print(user)
-    return JsonResponse(user)
+    response = HttpResponse("Registration successfully!")
+    response.set_cookie('authorization',
+                        value=token,
+                        path='/',
+                        httponly=True)
+    return response

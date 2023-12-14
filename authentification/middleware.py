@@ -10,13 +10,18 @@ class AuthenticationMiddleware:
 
         if request.path in ['/authentification/login', '/authentification/register']:
             return response
-
-        if 'Authorization' not in request.headers:
+        print(request.headers['Cookie'])
+        if 'Cookie' not in request.headers:
             return HttpResponse("Unauthorized", status=401)
-
-        access_token = request.headers['Authorization'].replace("Bearer ", "", 1)
-
-        if not checkAccessToken(access_token):
+        if 'authorization' not in request.headers['Cookie']:
             return HttpResponse("Unauthorized", status=401)
+        cookies = request.headers['Cookie'].split(';')
 
-        return response
+        for cookie in cookies:
+            parts = cookie.split('=')
+            if parts[0] == 'authorization':
+                if checkAccessToken(parts[1]) == False:
+                    return HttpResponse("Unauthorized", status=401)
+                else:
+                    return response
+        return HttpResponse("Unauthorized", status=401)

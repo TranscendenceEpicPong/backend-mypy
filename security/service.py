@@ -1,4 +1,13 @@
+import hmac
 import hashlib
+import base64
+import json
+
+def create_hs256_signature(data, secret_key):
+    json_data = json.dumps(data, separators=(',', ':'), sort_keys=True)
+    secret_key_bytes = bytes(secret_key, 'utf-8')
+    signature = hmac.new(secret_key_bytes, json_data.encode('utf-8'), hashlib.sha256).digest()
+    return base64.urlsafe_b64encode(signature).decode('utf-8')
 
 def sha256_hash(data):
     # Créer un objet hashlib pour l'algorithme SHA-256

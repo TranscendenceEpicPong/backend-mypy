@@ -10,6 +10,8 @@ from django.contrib.auth.hashers import make_password, check_password
 import security.service as security_service
 import binascii
 import environment.env
+import jwt
+import datetime
 
 def setNewToken(userId):
     token = random.random()
@@ -17,41 +19,26 @@ def setNewToken(userId):
     user_token.save()
     return token
 
-def createAccessToken(userId):
+def createAccessToken(user):
     ENV_SECRET_KEY = "1234"
-
     try:
-        instance_token = Token.objects.get(user=userId)
+        instance_token = Token.objects.get(user=user['userId'])
         token = instance_token.token
-
         hash_token = security_service.sha256_hash(f"{token}.{ENV_SECRET_KEY}")
-        payload = {
-            "userId": userId,
-            "token": hash_token
-        }
-        payload = security_service.encode_to_hex(json.dumps(payload))
-        signature = security_service.sha256_hash(f"{payload}.{ENV_SECRET_KEY}")
-
-        return f"{payload}.{signature}"
+        payload = user.copy()
+        payload['token'] = hash_token
+        payload["exp"] = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        return jwt.encode(payload, ENV_SECRET_KEY, algorithm='HS256')
     except:
         return None
 
 def checkAccessToken(access_token):
     ENV_SECRET_KEY = "1234"
 
-    parts = access_token.split('.')
-
-    if len(parts) != 2:
-        return False
-    
     try:
-        payload_hexa = parts[0]
-        signature = parts[1]
+        payload = jwt.decode(access_token, ENV_SECRET_KEY, algorithms=['HS256'])
 
-        payload = security_service.decode_from_hex(payload_hexa)
-        payload = json.loads(payload)
-
-        if 'userId' not in payload or 'token' not in payload:
+        if 'token' not in payload:
             return False
 
         userId = payload['userId']
@@ -60,29 +47,31 @@ def checkAccessToken(access_token):
         instance_token = Token.objects.get(user=userId)
         hash_token = security_service.sha256_hash(f"{instance_token.token}.{ENV_SECRET_KEY}")
 
-        if token != hash_token or signature != security_service.sha256_hash(f"{payload_hexa}.{ENV_SECRET_KEY}"):
+        if token != hash_token:
             return False
     except:
         return False
     
     return True
 
-
-
 def login(datas):
     user = users_service.getByEmail(datas.get('email'))
 
     if user is None:
         return {"datas": None }
-    
+
     if check_password(datas.get('password'), user.password) == False:
         return {"datas": "Mot de passe incorrect"}
 
-    return {"datas": {"access_token": createAccessToken(user.id)}}
+    return createAccessToken({'userId': user.id, 'username': user.username, 'email': user.email})
 
 
 def register(datas):
-    user = users_service.getModel().objects.get(Q(email=datas.get('email')) | Q(username=datas.get('username')))
+    user = None
+    try:
+        user = users_service.getModel().objects.get(Q(email=datas.get('email')) | Q(username=datas.get('username')))
+    except:
+        user = None
 
     if user is not None:
         return {"datas": "Email ou username déjà utilisé"}
@@ -99,8 +88,4 @@ def register(datas):
 
     setNewToken(user['userId'])
 
-    return {
-        "datas": {
-            "access_token": createAccessToken(user['userId']),
-        }
-    }
+    return createAccessToken({'userId': user['userId'], 'username': user['username'], 'email': user['email']})
