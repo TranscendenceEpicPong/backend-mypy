@@ -10,6 +10,10 @@ import binascii
 import authentification.service as service
 import datetime
 
+def test(request):
+    print("TEST")
+    return HttpResponse("Test")
+
 @require_POST
 def login(request):
     token = service.login({

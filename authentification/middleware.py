@@ -7,10 +7,10 @@ class AuthenticationMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
+        print("MIDDLEWARE")
 
         if request.path in ['/authentification/login', '/authentification/register']:
             return response
-        print(request.headers['Cookie'])
         if 'Cookie' not in request.headers:
             return HttpResponse("Unauthorized", status=401)
         if 'authorization' not in request.headers['Cookie']:
