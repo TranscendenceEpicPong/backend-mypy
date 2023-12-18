@@ -19,5 +19,5 @@ from django.urls import path
 from tournament_app import views
 
 urlpatterns = [
-	path('tournaments/', views.tournament, name='tournament'),
+    path('', views.tournament, name='tournament'),
 ]

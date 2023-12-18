@@ -5,7 +5,7 @@ from .models import Tournament
 
 
 def tournament(request):
-	tournaments = Tournament.objects.all()
-	return render(request,
-				'tournament.html',
-				{'tournaments': tournaments})
+    tournaments = Tournament.objects.all()
+    return render(request,
+                'tournament.html',
+                {'tournaments': tournaments})
