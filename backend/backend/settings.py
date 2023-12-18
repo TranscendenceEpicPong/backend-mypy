@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'backend',
     'frontend',
+	'tournament_app'
 ]
 
 MIDDLEWARE = [
