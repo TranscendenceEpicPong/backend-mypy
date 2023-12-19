@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    path("authentification/", include("authentification.urls")),
+    path("users/", include("users.urls")),
     path('admin/', admin.site.urls),
     path('', include('frontend.urls')),
     path('tournaments/', include('tournament_app.urls'), name='tournament'),
