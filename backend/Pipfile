@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 django = "<4.3"
 psycopg2 = "<3"
+setuptools = "*"
+jwt = "*"
 
 [dev-packages]
 mypy = "*"

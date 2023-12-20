@@ -1,6 +1,7 @@
 from django.http import JsonResponse, HttpResponse
 from .service import checkAccessToken
 
+
 class AuthenticationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
