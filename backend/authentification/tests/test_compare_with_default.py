@@ -68,13 +68,13 @@ class AuthClient(Client):
 
 @override_settings(ROOT_URLCONF=__name__)
 class AuthenticationTestCase(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        """ get_some_resource() is slow, to avoid calling it for each test use setUpClass()
-            and store the result as class variable
-        """
-        super(AuthenticationTestCase, cls).setUpClass()
-        setup_test_app(__package__)
+    # @classmethod
+    # def setUpClass(cls):
+    #     """ get_some_resource() is slow, to avoid calling it for each test use setUpClass()
+    #         and store the result as class variable
+    #     """
+    #     super(AuthenticationTestCase, cls).setUpClass()
+    #     setup_test_app(__package__)
 
     def setUp(self):
         self.creds = {
