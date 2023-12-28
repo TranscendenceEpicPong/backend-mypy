@@ -17,10 +17,10 @@ class TournamentAdmin(admin.ModelAdmin):
 
     actions = ['delete_all_matches']
 
+    @admin.action(description="Supprimer tous les matchs du tournoi")
     def delete_all_matches(self, request, queryset):
         for tournament in queryset:
             tournament.match_set.all().delete()
 
-    delete_all_matches.short_description = "Supprimer tous les matchs du tournoi"
 
 admin.site.register(Tournament, TournamentAdmin)

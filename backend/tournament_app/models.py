@@ -4,15 +4,19 @@ from django.contrib.auth.models import User
 import random
 from itertools import zip_longest
 
+from django.conf import settings
+
 # Create your models here.
 
 class Tournament(models.Model):
     name = models.CharField(max_length=50)
     creator_alias = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_tournament')
-    participants = models.ManyToManyField(User, through='RegistrationTournament')
+    participants: 'models.ManyToManyField' = models.ManyToManyField(User, through='RegistrationTournament')
     is_open = models.BooleanField(default=True)
     max_participants = models.PositiveIntegerField(default=20)
-    ranking = models.ManyToManyField('RegistrationTournament', through='TournamentRanking', related_name='tournament_ranking')
+    ranking: 'models.ManyToManyField' = models.ManyToManyField('RegistrationTournament',
+                                                               through='TournamentRanking',
+                                                               related_name='tournament_ranking')
 
     PHASE_CHOICES = [
         ('no', 'not begin'),
