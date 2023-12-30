@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Structure des Tournois</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 20px;
+		}
+		.tournament {
+			border: 1px solid #ccc;
+			padding: 10px;
+			margin-bottom: 20px;
+		}
+		.round {
+			border: 1px solid #ddd;
+			padding: 10px;
+			margin-bottom: 10px;
+		}
+		.match {
+			border: 1px solid #eee;
+			padding: 5px;
+			margin-bottom: 5px;
+		}
+		.ranking {
+			margin-top: 20px;
+		}
+		.ranking h3 {
+			font-size: 18px;
+			margin-bottom: 10px;
+		}
+		.ranking table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+		.ranking th, .ranking td {
+			border: 1px solid #ddd;
+			padding: 8px;
+			text-align: left;
+		}
+		.ranking th {
+			background-color: #f2f2f2;
+		}
+	</style>
+</head>
+<body>
+
+{% if not tournaments %}
+	<p>pas de tournoi</p>
+{% endif %}
+
+{% for tournament in tournaments %}
+	<div class="tournament">
+		<h2>{{ tournament.name }}</h2>
+		<p>Créateur : {{ tournament.creator_alias.username }}</p>
+		<p>Participants : {{ tournament.participants.count }} / {{ tournament.max_participants }}</p>
+
+		{% if tournament.phase_pool %}
+			<p>Phase de poule en cours</p>
+			{% for match in tournament.match_set.all %}
+				{% if match.round_name == 'Pool Match' %}
+						<div class="match">
+								<p>{{ match.player1.username }} vs {{ match.player2.username }} - Score: {{ match.score_player1 }} - {{ match.score_player2 }}</p>
+						</div>
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+		{% if tournament.get_ranking %}
+		<div class="ranking">
+			<h3>Classement</h3>
+			<table>
+				<thead>
+					<tr>
+						<th>Rank</th>
+						<th>Alias</th>
+						<th>Points</th>
+						<th>Goal Average</th>
+						<th>Goal Conceded</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for ranking_entry in tournament.get_ranking %}
+					<tr>
+						<td>{{ forloop.counter }}</td>
+						<td>{{ ranking_entry.registration.alias }}</td>
+						<td>{{ ranking_entry.registration.points }}</td>
+						<td>{{ ranking_entry.registration.goal_average }}</td>
+						<td>{{ ranking_entry.registration.goal_conceded }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		{% endif %}
+		{% if tournament.phase_eighth %}
+			<p>Phase des huitièmes en cours</p>
+			{% for match in tournament.match_set.all %}
+				{% if match.round_name == 'Eighth Match' %}
+					<div class="match">
+						<p>{{ match.player1.username }} vs {{ match.player2.username }} - Score: {{ match.score_player1 }} - {{ match.score_player2 }}</p>
+					</div>
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+		{% if tournament.phase_quarter %}
+			<p>Phase des quarts en cours</p>
+			{% for match in tournament.match_set.all %}
+				{% if match.round_name == 'Quarter Match' %}
+					<div class="match">
+						<p>{{ match.player1.username }} vs {{ match.player2.username }} - Score: {{ match.score_player1 }} - {{ match.score_player2 }}</p>
+					</div>
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+		{% if tournament.phase_semi %}
+			<p>Phase des demi-finales en cours</p>
+			{% for match in tournament.match_set.all %}
+				{% if match.round_name == 'Semi Match' %}
+					<div class="match">
+						<p>{{ match.player1.username }} vs {{ match.player2.username }} - Score: {{ match.score_player1 }} - {{ match.score_player2 }}</p>
+					</div>
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+		{% if tournament.phase_final %}
+			<p>Finale en cours</p>
+			{% for match in tournament.match_set.all %}
+				{% if match.round_name == 'Final Match' %}
+					<div class="match">
+						<p>{{ match.player1.username }} vs {{ match.player2.username }} - Score: {{ match.score_player1 }} - {{ match.score_player2 }}</p>
+					</div>
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+		{% for round in tournament.rounds.all %}
+			<div class="round">
+				<h3>{{ round.name }}</h3>
+
+				{% for match in round.matches.all %}
+					<div class="match">
+						<p>{{ match.player1 }} vs {{ match.player2 }}</p>
+					</div>
+				{% endfor %}
+			</div>
+		{% endfor %}
+	</div>
+{% endfor %}
+
+</body>
+</html>

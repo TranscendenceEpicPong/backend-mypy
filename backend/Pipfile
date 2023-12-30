@@ -5,11 +5,12 @@ name = "pypi"
 
 [packages]
 django = "<4.3"
-psycopg2 = "<3"
+psycopg2-binary = "<3"
+django-environ = "*"
 
 [dev-packages]
 mypy = "*"
-django-stubs = {extras = ["compatible-mypy"], version = "*"}
+django-stubs = "*"
 
 [requires]
 python_version = "3.12"
