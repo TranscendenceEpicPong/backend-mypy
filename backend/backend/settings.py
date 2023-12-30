@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'backend',
-    'frontend',
     'tournament_app'
 ]
 
