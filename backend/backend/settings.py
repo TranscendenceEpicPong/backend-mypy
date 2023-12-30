@@ -16,8 +16,8 @@ import os
 
 env = environ.Env(
     DB_NAME=(str, 'transcendence'),
-    DB_USER=(str, 'trans'),
-    DB_PASS=(str, 'pass'),
+    DB_USER=(str, 'postgres'),
+    DB_PASS=(str, 'password'),
     DB_HOST=(str, '127.0.0.1'),
     DB_PORT=(str, '5432'),
     MYPY_DJANGO_CONFIG=(str, './mypy.ini'),
