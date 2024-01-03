@@ -74,6 +74,7 @@ def register(datas):
         user = None
 
     if user is not None:
+        raise
         return {"datas": "Email ou username déjà utilisé"}
 
     user = users_service.create({

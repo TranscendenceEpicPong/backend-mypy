@@ -9,6 +9,7 @@ from security.service import sha256_hash
 import binascii
 import authentification.service as service
 import datetime
+from django.contrib.auth import authenticate, login, logout
 
 def test(request):
     return HttpResponse("Test")
