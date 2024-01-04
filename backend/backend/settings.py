@@ -31,7 +31,8 @@ ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0", "localhost"]
 # Application definition
 
 INSTALLED_APPS = [
-    'authentification.apps.AuthConfig',
+    'users',
+    'authentication.apps.AuthConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,9 +46,11 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'sessions.middleware.CustomSessionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
 #    'django.middleware.csrf.CsrfViewMiddleware',
+    'authentication.middleware.CustomAuthenticationMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -132,3 +135,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_ENGINE="django.contrib.sessions.backends.db"
 SESSION_COOKIE_AGE = 3600
+
+AUTH_USER_MODEL = 'users.CustomUser'

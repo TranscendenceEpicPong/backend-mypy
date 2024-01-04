@@ -1,6 +1,6 @@
 # forms.py
 from django import forms
-from django.contrib.auth.models import User
+from users.models import CustomUser as User
 
 class UserRegisterForm(forms.ModelForm):
     confirm_password = forms.CharField(widget=forms.PasswordInput())
@@ -16,11 +16,14 @@ class UserRegisterForm(forms.ModelForm):
             raise forms.ValidationError(
                 "Les mots de passe ne sont pas identiques"
             )
+        return cleaned_data
 
 class UserLoginForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['email', 'password']
+        fields = ['username', 'password']
     def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get("password")
+        if self.is_valid() == False:
+            raise forms.ValidationError(
+                "identifiant ou mot de passe incorrect"
+            )
