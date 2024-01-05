@@ -57,7 +57,7 @@
 		<p>Créateur : {{ tournament.creator_alias.username }}</p>
 		<p>Participants : {{ tournament.participants.count }} / {{ tournament.max_participants }}</p>
 
-		{% if tournament.phase_pool %}
+		{% if tournament.phase == 'pool' %}
 			<p>Phase de poule en cours</p>
 			{% for match in tournament.match_set.all %}
 				{% if match.round_name == 'Pool Match' %}
@@ -94,7 +94,7 @@
 			</table>
 		</div>
 		{% endif %}
-		{% if tournament.phase_eighth %}
+		{% if tournament.phase == 'eighth' %}
 			<p>Phase des huitièmes en cours</p>
 			{% for match in tournament.match_set.all %}
 				{% if match.round_name == 'Eighth Match' %}
@@ -104,7 +104,7 @@
 				{% endif %}
 			{% endfor %}
 		{% endif %}
-		{% if tournament.phase_quarter %}
+		{% if tournament.phase == 'quarter' %}
 			<p>Phase des quarts en cours</p>
 			{% for match in tournament.match_set.all %}
 				{% if match.round_name == 'Quarter Match' %}
@@ -114,7 +114,7 @@
 				{% endif %}
 			{% endfor %}
 		{% endif %}
-		{% if tournament.phase_semi %}
+		{% if tournament.phase == 'semi' %}
 			<p>Phase des demi-finales en cours</p>
 			{% for match in tournament.match_set.all %}
 				{% if match.round_name == 'Semi Match' %}
@@ -124,7 +124,7 @@
 				{% endif %}
 			{% endfor %}
 		{% endif %}
-		{% if tournament.phase_final %}
+		{% if tournament.phase == 'final' %}
 			<p>Finale en cours</p>
 			{% for match in tournament.match_set.all %}
 				{% if match.round_name == 'Final Match' %}
