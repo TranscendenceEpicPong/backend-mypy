@@ -44,8 +44,8 @@ services:
       context: database/
     container_name: transcendance_database
     restart: always
-    volumes:
-      - db-data:/var/lib/postgresql/data
+#    volumes:
+#      - db-data:/var/lib/postgresql/data
     networks:
       - backend
     env_file:

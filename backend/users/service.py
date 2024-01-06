@@ -1,6 +1,6 @@
 from .form import UserRegisterForm, UserLoginForm
 from django.contrib.auth.hashers import make_password, check_password
-from django.contrib.auth.models import User
+from .models import CustomUser as User
 import json
 
 def create(datas):
