@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import random
 from itertools import zip_longest
+import logging # error
 
 # Create your models here.
 
@@ -23,7 +24,7 @@ class Tournament(models.Model):
         ('final', 'Final Phase'),
     ]
 
-    phase = models.CharField(max_length=10, choices=PHASE_CHOICES, default='no')
+    phase = models.CharField(max_length=20, choices=PHASE_CHOICES, default='no')
 
     def __str__(self):
         return f"{self.name} (Creator: {self.creator_alias})"
@@ -32,8 +33,8 @@ class Tournament(models.Model):
         return self.participants.count() == self.max_participants
         
     def start_next_phase(self):
-        if self.participants.count() >= 3 and self.participants.count() <= 20:
-            # error : invalid number of participants
+        if self.participants.count() <= 3 and self.participants.count() > 20:
+            logging.error(f'Tournament "{self.name}" invalid number of participants.')
             return 
         # pool
         if self.phase == 'no':
