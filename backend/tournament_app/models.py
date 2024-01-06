@@ -1,4 +1,6 @@
 from collections.abc import Iterable
+
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.contrib.auth.models import User
 import random
@@ -10,8 +12,8 @@ from django.conf import settings
 
 class Tournament(models.Model):
     name = models.CharField(max_length=50)
-    creator_alias = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_tournament')
-    participants: 'models.ManyToManyField' = models.ManyToManyField(User, through='RegistrationTournament')
+    creator_alias = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='created_tournament')
+    participants: 'models.ManyToManyField' = models.ManyToManyField(get_user_model(), through='RegistrationTournament')
     is_open = models.BooleanField(default=True)
     max_participants = models.PositiveIntegerField(default=20)
     ranking: 'models.ManyToManyField' = models.ManyToManyField('RegistrationTournament',
@@ -197,11 +199,10 @@ class Tournament(models.Model):
         return TournamentRanking.objects.filter(tournament=self).order_by('rank')
 
 
-
 class Match(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
-    player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player1_matches')
-    player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player2_matches')
+    player1 = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='player1_matches')
+    player2 = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='player2_matches')
     round_name = models.CharField(max_length=50)
     score_player1 = models.PositiveIntegerField(default=0)
     score_player2 = models.PositiveIntegerField(default=0)
@@ -220,7 +221,7 @@ class Match(models.Model):
 
 
 class RegistrationTournament(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     alias = models.CharField(max_length=50)
     points = models.PositiveIntegerField(default=0)
@@ -229,6 +230,7 @@ class RegistrationTournament(models.Model):
 
     class Meta:
         unique_together = ('tournament', 'alias')
+
 
 class TournamentRanking(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)

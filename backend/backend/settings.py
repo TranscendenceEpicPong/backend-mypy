@@ -41,8 +41,6 @@ ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0", "localhost"]
 # Application definition
 
 INSTALLED_APPS = [
-    'users',
-    'authentication.apps.AuthConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,7 +49,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'backend',
-    'tournament_app'
+    'tournament_app',
+    'users',
+    'authentication',
 ]
 
 MIDDLEWARE = [
