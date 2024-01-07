@@ -1,11 +1,12 @@
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
-from users.models import CustomUser as User
+from core.models import EpicPongUser as User
 import datetime
 from django.contrib.auth import authenticate as django_authenticate, login as django_login
-from users.form import UserRegisterForm, UserLoginForm
-import jwt
+from .forms import UserRegisterForm, UserLoginForm
+from jwt import JWT
 from django.db.models import Q
+
 
 @require_POST
 def login(request):
@@ -16,21 +17,24 @@ def login(request):
         "password": request.POST.get('password'),
     })
     if form.is_valid() == False:
-        return HttpResponse(user.errors)
-    user = None
-    try:
-        user = User.objects.get(Q(username=username) | Q(email=username))
-        if user.check_password(form.cleaned_data['password']) == False:
-            return HttpResponse("Mot de passe incorrect", 401)
-    except User.DoesNotExist:
-        return HttpResponse("Identifiant incorrect", 401)
+        return HttpResponse(form.errors)
+    # user = None
+    # try:
+    #     user = User.objects.get(Q(username=username) | Q(email=username))
+    #     if user.check_password(form.cleaned_data['password']) == False:
+    #         return HttpResponse("Mot de passe incorrect", 401)
+    # except User.DoesNotExist:
+    #     return HttpResponse("Identifiant incorrect", 401)
 
-    authentication = django_authenticate(request,
-                 username=form.cleaned_data['username'],
-                 password=form.cleaned_data['password'])
-    django_login(request, authentication)
+    user = django_authenticate(request,
+                               username=form.cleaned_data['username'],
+                               password=form.cleaned_data['password'])
+    if user is None:
+        return HttpResponse("Wrong credentials", 401)
 
-    token = jwt.encode({
+    django_login(request, user)
+
+    token = JWT.encode({
         'username': user.username,
         'email': user.email,
         'sessionId': session_key,
@@ -44,6 +48,7 @@ def login(request):
                         path='/',
                         httponly=True)
     return response
+
 
 @require_POST
 def register(request):
@@ -73,8 +78,8 @@ def register(request):
     user.save()
 
     authentication = django_authenticate(request,
-                 username=user.cleaned_data['username'],
-                 password=user.cleaned_data['password'])
+                                         username=user.cleaned_data['username'],
+                                         password=user.cleaned_data['password'])
     django_login(request, authentication)
 
     token = jwt.encode({

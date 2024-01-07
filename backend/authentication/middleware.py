@@ -1,7 +1,7 @@
 from django.contrib.auth.middleware import AuthenticationMiddleware
 import jwt
 import json
-from security.service import sha256_hash
+
 
 class CustomAuthenticationMiddleware(AuthenticationMiddleware):
     def _unAuthorized(self, request):

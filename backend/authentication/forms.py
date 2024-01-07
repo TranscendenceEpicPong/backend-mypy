@@ -1,13 +1,15 @@
-# forms.py
 from django import forms
-from users.models import CustomUser as User
+
+from core.models import EpicPongUser
+
 
 class UserRegisterForm(forms.ModelForm):
     confirm_password = forms.CharField(widget=forms.PasswordInput())
 
     class Meta:
-        model = User
+        model = EpicPongUser
         fields = ['username', 'email', 'password']
+
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
@@ -18,10 +20,12 @@ class UserRegisterForm(forms.ModelForm):
             )
         return cleaned_data
 
+
 class UserLoginForm(forms.ModelForm):
     class Meta:
-        model = User
+        model = EpicPongUser
         fields = ['username', 'password']
+
     def clean(self):
         if self.is_valid() == False:
             raise forms.ValidationError(
