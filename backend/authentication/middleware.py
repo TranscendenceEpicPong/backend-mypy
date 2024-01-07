@@ -1,20 +1,11 @@
-from django.contrib.auth.middleware import AuthenticationMiddleware
 import jwt
-import json
+from django.http import HttpResponse
 
 
-class CustomAuthenticationMiddleware(AuthenticationMiddleware):
-    def _unAuthorized(self, request):
-        response = self.get_response(request)
-        response.status_code = 401
-        response.content = json.dumps({
-            "message": "Accès refusé"
-        })
-        return response
-
-    def process_request(self, request):
+def CustomAuthenticationMiddleware(get_response):
+    def middleware(request):
         if request.path in ['/authentication/login', '/authentication/register']:
-            return None
+            return get_response(request)
 
         authorization = request.COOKIES.get('authorization')
         sessionId = request.COOKIES.get('sessionid')
@@ -23,7 +14,13 @@ class CustomAuthenticationMiddleware(AuthenticationMiddleware):
         try:
             token = jwt.decode(authorization, 'ENV_secret', algorithms=['HS256'])
         except:
-            return self._unAuthorized(request)
+            return HttpResponse("Wrong token", status=401)
 
         if token.get('sessionId') != session_key:
-            return self._unAuthorized(request)
+            return HttpResponse("Wrong token", status=401)
+
+        response = get_response(request)
+
+        return response
+
+    return middleware

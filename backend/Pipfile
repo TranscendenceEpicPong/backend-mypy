@@ -7,7 +7,7 @@ name = "pypi"
 django = "<4.3"
 psycopg2-binary = "<3"
 django-environ = "*"
-jwt = "*"
+pyjwt = "*"
 
 [dev-packages]
 mypy = "*"
