@@ -11,7 +11,7 @@ jwt = "*"
 
 [dev-packages]
 mypy = "*"
-django-stubs = "*"
+django-stubs = {extras = ["compatible-mypy"], version = "*"}
 
 [requires]
 python_version = "3.12"
