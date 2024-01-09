@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import random
 from itertools import zip_longest
+import logging # error
 
 from django.conf import settings
 
@@ -27,7 +28,7 @@ class Tournament(models.Model):
         ('final', 'Final Phase'),
     ]
 
-    phase = models.CharField(max_length=10, choices=PHASE_CHOICES, default='no')
+    phase = models.CharField(max_length=20, choices=PHASE_CHOICES, default='no')
 
     def __str__(self):
         return f"{self.name} (Creator: {self.creator_alias})"
@@ -36,39 +37,28 @@ class Tournament(models.Model):
         return self.participants.count() == self.max_participants
         
     def start_next_phase(self):
-        if self.participants.count() >= 3 and self.participants.count() <= 20:
-            # error : invalid number of participants
+        if self.participants.count() <= 3 and self.participants.count() > 20:
+            logging.error(f'Tournament "{self.name}" invalid number of participants.')
             return 
-        # pool
         if self.phase == 'no':
-            if self.participants.count() >= 16:
-                self.phase = 'eighth',
-            elif self.participants.count() >= 8:
-                self.phase = 'quarter'
-            elif self.participants.count() >= 4:
-                self.phase = 'semi'
-            elif self.participants.count() >= 2:
-                self.phase = 'final'
             self.is_open = False
+            self.phase = 'pool'
             self.save()
             self.organize_pool_matches()
-        # eighth
-        elif self.phase == 'eighth':
-            self.phase = 'quarter'
+        elif self.phase == 'pool' and self.participants.count() >= 16:
+            self.phase = 'eighth'
             self.save()
             self.organize_eighth_matches()
-        # quarter
-        elif self.phase == 'quarter':
-            self.phase = 'semi'
+        elif (self.phase == 'pool' and self.participants.count() >= 8) or self.phase == 'eighth':
+            self.phase = 'quarter'
             self.save()
             self.organize_quarter_matches()
-        # semi
-        elif self.phase == 'semi':
-            self.phase = 'final'
+        elif (self.phase == 'pool' and self.participants.count() >= 4) or self.phase == 'quarter':
+            self.phase = 'semi'
             self.save()
             self.organize_semi_matches()
-        # final
-        elif self.phase == 'final':
+        elif (self.phase == 'pool' and self.participants.count() >= 2) or self.phase == 'semi':
+            self.phase = 'final'
             self.save()
             self.organize_final_match()
 
@@ -138,7 +128,7 @@ class Tournament(models.Model):
         self.save()
 
     def organize_quarter_matches(self):
-        if not self.phase_eighth:
+        if self.participants.count() < 16:
             participants = TournamentRanking.objects.filter(tournament=self).order_by('rank')[:8]
         else:
             winners_eighth = [match.get_winner() for match in Match.objects.filter(tournament=self, round_name='Eighth Match')]
@@ -156,7 +146,7 @@ class Tournament(models.Model):
         self.save()
 
     def organize_semi_matches(self):
-        if not self.phase_quarter:
+        if self.participants.count() < 8:
             participants = TournamentRanking.objects.filter(tournament=self).order_by('rank')[:4]
         else:
             winners_quarter = [match.get_winner() for match in Match.objects.filter(tournament=self, round_name='Quarter Match')]
@@ -174,7 +164,7 @@ class Tournament(models.Model):
         self.save()
 
     def organize_final_match(self):
-        if not self.phase_semi:
+        if self.participants.count() < 4:
             participants = TournamentRanking.objects.filter(tournament=self).order_by('rank')[:2]
         else:
             participants = [match.get_winner() for match in Match.objects.filter(tournament=self, round_name='Semi Match')]
@@ -238,7 +228,7 @@ class TournamentRanking(models.Model):
     class Meta:
         ordering = ['rank']
 
-    def update_ranking(self):
-        participants = RegistrationTournament.objects.filter(tournament=self.tournament).order_by('-points', '-goal_average', 'goal_conceded', '?')
+    def update_ranking(self, tournament):
+        participants = RegistrationTournament.objects.filter(tournament=tournament).order_by('-points', '-goal_average', 'goal_conceded', '?')
         for i, participant in enumerate(participants, start=1):
-            TournamentRanking.objects.update_or_create(tournament=self.tournament, registration=participant, defaults={'rank': i})
+            TournamentRanking.objects.update_or_create(tournament=tournament, registration=participant, defaults={'rank': i})
