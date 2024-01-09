@@ -1,3 +1,10 @@
+###########################################################################
+#                                                                         #
+#   Use :                                                                 #
+#          python manage.py next_phase <tournament_name>                  #
+#                                                                         #
+###########################################################################
+
 from django.core.management.base import BaseCommand
 from tournament_app.models import Tournament
 

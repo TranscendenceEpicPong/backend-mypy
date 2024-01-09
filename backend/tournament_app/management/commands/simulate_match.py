@@ -1,3 +1,13 @@
+#########################################################################################
+#                                                                                       #
+#   Use :                                                                               #
+#          python manage.py simulate_match <tournament_name> <phase>                    #
+#                                                                                       #
+#   phase option:                                                                       #
+#          pool; eighth; quarter; semi; final                                           #
+#                                                                                       #
+#########################################################################################
+
 from django.core.management.base import BaseCommand
 from tournament_app.models import Match, Tournament
 import random
