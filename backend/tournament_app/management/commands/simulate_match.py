@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from tournament_app.models import Match, Tournament
 import random
+from tournament_app.utils import reset_ranking, update_tournament_results
 
 
 class Command(BaseCommand):
@@ -42,5 +43,11 @@ class Command(BaseCommand):
             match.save()
 
             self.stdout.write(self.style.SUCCESS(f'Match: {match.player1.username} vs {match.player2.username} - Scores: {match.score_player1}-{match.score_player2}'))
+
+        tournament = Tournament.objects.get(name=tournament_name)
+        if phase == 'pool':
+            update_tournament_results(tournament)
+            self.stdout.write(self.style.SUCCESS(f'Ranking in tournament "{tournament_name}" is uptade.'))
+
 
         self.stdout.write(self.style.SUCCESS('Simulation complete.'))

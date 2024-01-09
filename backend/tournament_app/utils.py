@@ -35,13 +35,11 @@ def update_tournament_results(tournament):
             loser.goal_average += match.score_player1 - match.score_player2
             loser.goal_conceded += match.score_player2
         
-        winner_user.save()
-        loser_user.save()
+        winner.save()
+        loser.save()
 
-        loser.goal_average += match.score_player2 - match.score_player1
-        loser.goal_conceded += match.score_player1
-
-    TournamentRanking.update_ranking(tournament)
+    ranking_instance = TournamentRanking()
+    ranking_instance.update_ranking(tournament)
 
 def reset_ranking(tournament):
     participants = RegistrationTournament.objects.filter(tournament=tournament)
